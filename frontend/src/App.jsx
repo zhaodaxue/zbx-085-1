@@ -86,8 +86,10 @@ function App() {
   }
 
   const getPriorityClass = (box) => {
-    if (box.priority_score >= 120) return 'high'
-    if (box.priority_score >= 60) return 'medium'
+    const hasOverdue = box.tags.some(t => t.type === 'overdue')
+    const hasLowHumidity = box.tags.some(t => t.type === 'low_humidity')
+    if (hasOverdue && hasLowHumidity) return 'high'
+    if (hasOverdue || hasLowHumidity) return 'medium'
     return 'normal'
   }
 

@@ -23,8 +23,10 @@ function calculateDaysSince(dateStr) {
   if (!dateStr) return 999;
   const last = new Date(dateStr);
   const now = new Date();
-  const diffTime = Math.abs(now - last);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const lastMidnight = new Date(last.getFullYear(), last.getMonth(), last.getDate());
+  const nowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diffTime = nowMidnight - lastMidnight;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   return diffDays;
 }
 
@@ -70,6 +72,12 @@ app.post('/api/boxes', (req, res) => {
   const { box_id, intersection_name, last_humidity, water_interval_days, last_water_date } = req.body;
   const data = loadData();
 
+  if (!box_id || !box_id.trim()) {
+    return res.status(400).json({ error: '花箱编号不能为空' });
+  }
+  if (!intersection_name || !intersection_name.trim()) {
+    return res.status(400).json({ error: '路口名称不能为空' });
+  }
   if (data.boxes.some(b => b.box_id === box_id)) {
     return res.status(400).json({ error: '花箱编号已存在' });
   }
